@@ -57,8 +57,10 @@ namespace QRMenu.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,PostalCode,AddressDetails,EMail,Phone,TaxNumber,RegisterationDate,WebAddress,StateId")] Company company)
+        public async Task<IActionResult> Create([Bind("Id,Name,PostalCode,AddressDetails,EMail,Phone,TaxNumber,WebAddress,StateId")] Company company)
         {
+            //Registeration dateyi kendimiz verdik
+            company.RegisterationDate = DateTime.Now;
             if (ModelState.IsValid)
             {
                 _context.Add(company);
@@ -98,15 +100,15 @@ namespace QRMenu.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid)  
+            {   
                 try
                 {
                     _context.Update(company);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
+                catch (DbUpdateConcurrencyException)  //Eş zamanlı edit post atılmasını engellemek için önlem.
+                {       //edit edilememesinin sebebi food.id nin olmaması mı diye kontrol ediyor.
                     if (!CompanyExists(company.Id))
                     {
                         return NotFound();

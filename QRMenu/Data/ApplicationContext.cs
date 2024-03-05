@@ -12,6 +12,7 @@ namespace QRMenu.Data
 		}
         public DbSet<QRMenu.Models.Company> Companies { get; set; } = default!;
 		public DbSet<State>? States { get; set; }
+		public DbSet<Food>? Foods { get; set; }
 		// üstteki kodlarda namespace yazılsa da olur yazılmasa da.
 	}
 }

@@ -77,6 +77,36 @@ namespace QRMenu.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("QRMenu.Models.Food", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
+
+                    b.Property<byte>("StateId")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StateId");
+
+                    b.ToTable("Foods");
+                });
+
             modelBuilder.Entity("QRMenu.Models.State", b =>
                 {
                     b.Property<byte>("Id")
@@ -93,6 +123,17 @@ namespace QRMenu.Migrations
                 });
 
             modelBuilder.Entity("QRMenu.Models.Company", b =>
+                {
+                    b.HasOne("QRMenu.Models.State", "State")
+                        .WithMany()
+                        .HasForeignKey("StateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("State");
+                });
+
+            modelBuilder.Entity("QRMenu.Models.Food", b =>
                 {
                     b.HasOne("QRMenu.Models.State", "State")
                         .WithMany()

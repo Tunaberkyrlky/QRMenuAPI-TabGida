@@ -10,9 +10,13 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
     <None Remove="Data\" />
+    <None Remove="Views\Foods\" />
+    <None Remove="Views\Companies\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Views\Foods\" />
+    <Folder Include="Views\Companies\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.16" />

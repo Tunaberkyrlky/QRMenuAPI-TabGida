@@ -12,8 +12,8 @@ using QRMenu.Data;
 namespace QRMenu.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20240301122940_initial")]
-    partial class initial
+    [Migration("20240304103109_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
