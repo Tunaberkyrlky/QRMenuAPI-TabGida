@@ -5,9 +5,10 @@ using QRMenu.Models;
 
 namespace QRMenu.Models
 {
-	public class Company
-	{
-		public int Id { get; set; }	  //[Key] attribute koyulması gerekmiyor çünkü EF otomatik algılıyor.
+    public class Company
+    {
+        [Key]
+        public int Id { get; set; }	  //[Key] attribute koyulması gerekmiyor çünkü EF otomatik algılıyor.
 
         [StringLength(200, MinimumLength = 2)]
         [Column(TypeName = "nvarchar(200)")]
@@ -16,7 +17,7 @@ namespace QRMenu.Models
         [DataType(DataType.PostalCode)]
         [StringLength(5, MinimumLength = 5)]
         [Column(TypeName = "char(5)")]
-		public string PostalCode { get; set; } = "";
+        public string PostalCode { get; set; } = "";
 
         [StringLength(300, MinimumLength = 5)]
         [Column(TypeName = "nvarchar(300)")]
@@ -40,8 +41,8 @@ namespace QRMenu.Models
         public DateTime RegisterationDate { get; set; }
 
         [StringLength(100)]
-        [Column(TypeName ="varchar(100)")]
-		public string? WebAddress { get; set; }
+        [Column(TypeName = "varchar(100)")]
+        public string? WebAddress { get; set; }
 
         [Column(TypeName ="tinyint")]
         public byte StateId { get; set; }

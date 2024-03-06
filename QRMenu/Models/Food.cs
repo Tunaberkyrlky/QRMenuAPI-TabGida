@@ -6,6 +6,7 @@ namespace QRMenu.Models
 {
 	public class Food
 	{
+        [Key]
 		public int Id { get; set; }
 
 		[StringLength(100, MinimumLength = 2)]
@@ -23,6 +24,10 @@ namespace QRMenu.Models
         public byte StateId { get; set; }
         [ForeignKey("StateId")]  //[ForeignKey(nameof(StateId))] 
         public State? State { get; set; }
+
+        public int CategoryId { get; set; }
+        [ForeignKey("CategoryId")]
+        public Category? Category { get; set; }
 
         //fotoğraf ve indirim yazılacak
     }
