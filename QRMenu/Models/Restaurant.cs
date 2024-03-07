@@ -28,6 +28,8 @@ namespace QRMenu.Models
         [Column(TypeName = "smalldatetime")]
         public DateTime RegisterationDate { get; set; }
 
+        public List<Category>? Categories { get; set; }
+
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         public Company? Company { get; set; }

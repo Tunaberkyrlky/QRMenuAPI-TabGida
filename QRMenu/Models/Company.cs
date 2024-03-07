@@ -40,6 +40,8 @@ namespace QRMenu.Models
         [Column(TypeName = "smalldatetime")]
         public DateTime RegisterationDate { get; set; }
 
+        public List<Restaurant>? Restaurants { get; set; }
+
         [StringLength(100)]
         [Column(TypeName = "varchar(100)")]
         public string? WebAddress { get; set; }

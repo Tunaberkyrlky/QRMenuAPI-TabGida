@@ -15,6 +15,7 @@ public class Program
         options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDatabase")));
         // Builder configuration, appsettings.json dosyasından "ApplicationDatabase" bilgisini çekerek sql'e bağlanır.
 
+        builder.Services.AddSession(); //session servisini uygulamada kullanmak için servis olarak eklememiz gerekiyor
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -31,6 +32,8 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
+
+        app.UseSession();  //uygulamada session kullanıyorsak burada belirtmemiz gerekiyor.
         
         app.Run();
     }

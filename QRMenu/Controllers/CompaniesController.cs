@@ -152,10 +152,32 @@ namespace QRMenu.Controllers
             {
                 return Problem("Entity set 'ApplicationContext.Company'  is null.");
             }
-            var company = await _context.Companies.FindAsync(id);
+            //var company = _context.Companies.Where(c => c.Id == id).Include(c => c.Restaurants).ThenInclude(r => r.Categories).FirstOrDefault();
+            var company = _context.Companies.Find(id);
             if (company != null)
-            {
-                _context.Companies.Remove(company);
+            {   //soft Delete
+                company.StateId = 0;
+                _context.Companies.Update(company);
+                // CompanyId'si sildiğimiz company'nin id'sine eşit olan restaurantların State'leri deleted'a çekildi
+                //_context.Restaurants.Where(r => r.CompanyId == id).ForEachAsync(r => r.StateId = 0).Wait();
+                IQueryable<Restaurant> restaurants = _context.Restaurants.Where(r => r.CompanyId == id);
+                foreach (Restaurant restaurant in restaurants)
+                {
+                    restaurant.StateId = 0;
+                    _context.Restaurants.Update(restaurant);
+                    IQueryable<Category> categories = _context.Categories.Where(c => c.RestaurantId == restaurant.Id);
+                    foreach (Category category in categories)
+                    {
+                        category.StateId = 0;
+                        _context.Categories.Update(category);
+                        IQueryable<Food> foods = _context.Foods.Where(c => c.CategoryId == category.Id);
+                        foreach (Food food in foods)
+                        {
+                            food.StateId = 0;
+                            _context.Foods.Update(food);
+                        }
+                    }
+                }
             }
             
             await _context.SaveChangesAsync();

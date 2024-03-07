@@ -15,6 +15,7 @@ namespace QRMenu.Data
 		public DbSet<Food>? Foods { get; set; }
 		public DbSet<Category>? Categories { get; set; }
 		public DbSet<Restaurant>? Restaurants { get; set; }
+		public DbSet<User>? Users { get; set; }
 		// üstteki kodlarda namespace yazılsa da olur yazılmasa da.
 	}
 }

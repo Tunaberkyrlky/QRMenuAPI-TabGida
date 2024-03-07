@@ -18,16 +18,27 @@ namespace QRMenu.Controllers
         //TÜM METHODLARDA INTERFACE YERİNE CLASS KULLANILDI
         // GET: Foods
 
-		public ViewResult Index(bool admin = false)
+		public ActionResult Index(bool admin = false)
 		{
             IQueryable<Food> foods = _context.Foods!;
-            if (admin == false) //Admin olmayanlara sadece Active statete olan sorgular döner
+            int? userId = HttpContext.Session.GetInt32("userId");
+
+            //LogIn methodunda aldığımız session bilgisini burada kontrol ediyoruz ve null ise kullanıcı login yapmamıştır, LogIn sayfasına yönlendiriyoruz.
+            if (userId==null)
             {
                 foods = foods.Where(f => f.StateId == 1);
             }
-            ViewData["admin"] = admin;  //admin olanlara ayrı kullanıcılara ayrı view göndermek için frontend'e admini gönderdik.
-            //where koşul ekler, ToList listeye dönüştürür, OrderBy(f=>f.Name) isme göre sıralama şartı koyar.
-			return View(foods.ToList());
+            ViewData["userId"] = userId;
+            return View(foods.ToList());
+
+   //              ---Admin Sorgusu---
+   //         if (admin == false) |//Admin olmayanlara sadece Active statete olan sorgular döner
+   //         {
+   //             foods = foods.Where(f => f.StateId == 1);|
+   //         }
+   //         ViewData["admin"] = admin;|  //admin olanlara ayrı kullanıcılara ayrı view göndermek için frontend'e admini gönderdik.
+   //         //where koşul ekler, ToList listeye dönüştürür, OrderBy(f=>f.Name) isme göre sıralama şartı koyar.
+			//return View(foods.ToList()); |
 		}
 		//view result sadece view döndürür actionresult ise view harici şeyler de döndürebilir. NotFound gibi.
 		//Aşağıda Details methodunda hem notfound hem view döndürdüğümüz için ActionResult Kullanmak zorundayız.
@@ -55,7 +66,7 @@ namespace QRMenu.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]              //frontendten gelen veriler ile bir food objesi yapıldı.
-        public ActionResult Create([Bind("Id,Name,Price,Description,StateId")] Food food)
+        public ActionResult Create([Bind("Id,Name,Price,Description,StateId,CategoryId")] Food food)
         {   //async Task<IActionResult> yazıyordu sildik.
             //Modelde tanımlanan propertylerin koşulları(maxlength vb.) Create viewdan gelirken {await Html.RenderPartialAsync("_ValidationScriptsPartial") kodu ile kontrol edilir eğer her şey olması gerektiği gibiyse valid verilir.
             if (ModelState.IsValid)

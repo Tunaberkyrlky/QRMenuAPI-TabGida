@@ -18,6 +18,8 @@ namespace QRMenu.Models
         [Column(TypeName = "nvarchar(200)")]
         public string? Description { get; set; }
 
+		public List<Food>? Foods { get; set; }
+
 		public int RestaurantId { get; set; }
 		[ForeignKey("RestaurantId")]
 		public Restaurant? Restaurant { get; set; }
