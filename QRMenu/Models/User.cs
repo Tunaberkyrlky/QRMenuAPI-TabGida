@@ -30,6 +30,8 @@ namespace QRMenu.Models
         public byte StateId { get; set; }
         [ForeignKey("StateId")]
         public State? State { get; set; }
+
+        public virtual List<Restaurant>? Restaurants { get; set; }
     }
 }
 
