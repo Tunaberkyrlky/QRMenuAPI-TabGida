@@ -46,7 +46,7 @@ namespace QRMenuAPI_TabGida.Models
         [Column(TypeName = "smalldatetime")]
         public DateTime RegisterationDate { get; set; }
 
-        
+
         [Column(TypeName = "tinyint")]
         public byte StateId { get; set; }
         [JsonIgnore]

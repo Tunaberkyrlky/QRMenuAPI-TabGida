@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using QRMenuAPI_TabGida.Models;
 using QRMenuAPI_TabGida.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace QRMenuAPI_TabGida
 {
@@ -43,7 +44,10 @@ namespace QRMenuAPI_TabGida
             app.MapControllers();
             {
                 ApplicationContext? Context = app.Services.CreateScope().ServiceProvider.GetService<ApplicationContext>();
-                DataInitialization dataInitialization = new DataInitialization(Context);
+                RoleManager<IdentityRole>? roleManager = app.Services.CreateScope().ServiceProvider.GetService<RoleManager<IdentityRole>>();
+                UserManager<ApplicationUser>? userManager = app.Services.CreateScope().ServiceProvider.GetService<UserManager<ApplicationUser>>();
+                DataInitialization dataInitialization = new DataInitialization(Context,roleManager,userManager);
+
                 
             }
             app.Run();

@@ -147,8 +147,7 @@ namespace QRMenuAPI_TabGida.Migrations
                         name: "FK_Restaurants_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Restaurants_States_StateId",
                         column: x => x.StateId,

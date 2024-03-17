@@ -1,19 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using QRMenuAPI_TabGida.Models;
-using System.Data.SqlTypes;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Data;
+
 
 namespace QRMenuAPI_TabGida.Data
 {
     public class DataInitialization
     {
         private readonly ApplicationContext? _context;
-        public DataInitialization(ApplicationContext context)
+        private readonly RoleManager<IdentityRole>? _roleManager;
+        private readonly UserManager<ApplicationUser>? _userManager;
+        public DataInitialization(ApplicationContext context, RoleManager<IdentityRole>? roleManager, UserManager<ApplicationUser>? userManager)
         {
             _context = context;
+            _roleManager = roleManager;
+            _userManager = userManager;
 
             State state;
-            Company company;
+            Company company = null;
+            IdentityRole identityRole;
+            ApplicationUser applicationUser;
             if (_context != null)
             {
                 _context.Database.Migrate();
@@ -43,6 +50,51 @@ namespace QRMenuAPI_TabGida.Data
                     _context.Companies.Add(company);
                 }
                 _context.SaveChanges();
+
+                if (_roleManager != null)
+                {
+                    if (roleManager.Roles.Count() == 0)
+                    {
+                        identityRole = new IdentityRole("SystemAdministrator");
+                        _roleManager.CreateAsync(identityRole).Wait();
+                        identityRole = new IdentityRole("Administrator");
+                        _roleManager.CreateAsync(identityRole).Wait();
+                        identityRole = new IdentityRole("CompanyAdministrator");
+                        _roleManager.CreateAsync(identityRole).Wait();
+                        identityRole = new IdentityRole("RestaurantAdministrator");
+                        _roleManager.CreateAsync(identityRole).Wait();
+                    }
+                }
+                if (userManager != null)
+                {
+                    if (userManager.Users.Count() == 0)
+                    {
+                        if (company != null)
+                        {
+                            applicationUser = new ApplicationUser();
+                            applicationUser.UserName = company.Name + "Admin";
+                            applicationUser.CompanyId = company.Id;
+                            applicationUser.Name = company.Name+ "Admin";
+                            applicationUser.Email = "abc@def.com";
+                            applicationUser.PhoneNumber = "1112223344";
+                            applicationUser.RegisterationDate = DateTime.Today;
+                            applicationUser.StateId = 1;
+                            userManager.CreateAsync(applicationUser, "Admin123!").Wait();
+                            userManager.AddToRoleAsync(applicationUser, "Administrator").Wait();
+
+                            applicationUser = new ApplicationUser();
+                            applicationUser.UserName = "SA";
+                            applicationUser.CompanyId = company.Id;
+                            applicationUser.Name = "SystemAdministrator";
+                            applicationUser.Email = "abc@def.com";
+                            applicationUser.PhoneNumber = "1112223344";
+                            applicationUser.RegisterationDate = DateTime.Today;
+                            applicationUser.StateId = 1;
+                            userManager.CreateAsync(applicationUser, "Admin123!").Wait();
+                            userManager.AddToRoleAsync(applicationUser, "SystemAdministrator").Wait();
+                        }
+                    }
+                }
             }
         }
     }

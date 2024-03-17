@@ -10,7 +10,7 @@ using QRMenuAPI_TabGida.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace QRMenuAPI.Controllers
+namespace QRMenuAPI_TabGida.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
