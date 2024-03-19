@@ -9,7 +9,6 @@ namespace QRMenuAPI_TabGida.Models
 {
     public class Restaurant
     {
-        [JsonIgnore]
         [Key]
         public int Id { get; set; }
 

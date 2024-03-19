@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using QRMenuAPI_TabGida.Models;
+using System.Text.Json.Serialization;
 
 namespace QRMenuAPI_TabGida.Models
 {
@@ -19,11 +20,13 @@ namespace QRMenuAPI_TabGida.Models
 
 
         public int RestaurantId { get; set; }
+        [JsonIgnore]
         [ForeignKey("RestaurantId")]
         public Restaurant? Restaurant { get; set; }
 
         [Column(TypeName = "tinyint")]
         public byte StateId { get; set; }
+        [JsonIgnore]
         [ForeignKey("StateId")]
         public State? State { get; set; }
     }

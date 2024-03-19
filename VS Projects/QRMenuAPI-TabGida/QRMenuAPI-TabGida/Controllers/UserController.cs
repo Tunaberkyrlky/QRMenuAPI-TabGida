@@ -9,6 +9,7 @@ using QRMenuAPI_TabGida.Data;
 using QRMenuAPI_TabGida.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace QRMenuAPI_TabGida.Controllers
 {
@@ -29,18 +30,24 @@ namespace QRMenuAPI_TabGida.Controllers
 
         // GET: api/User
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetUsers()
         {
-           
+
             if (_context.Users == null)
             {
                 return NotFound();
+            }
+            foreach (var user in _signInManager.UserManager.Users)
+            {
+                user.State = _context.States.FindAsync(user.StateId).Result;
             }
             return await _signInManager.UserManager.Users.ToListAsync();
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ApplicationUser>> GetApplicationUser(string id)
         {
 
@@ -56,11 +63,11 @@ namespace QRMenuAPI_TabGida.Controllers
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]                                                               
+        [HttpPut("{id}")]
+        [Authorize]
         public ActionResult PutApplicationUser(string id, ApplicationUser applicationUser)
         {
-            var existingApplicationUser = _signInManager.UserManager.FindByIdAsync(id).Result;
-
+            ApplicationUser existingApplicationUser = _signInManager.UserManager.FindByIdAsync(id).Result;
             existingApplicationUser.UserName = applicationUser.UserName;
             existingApplicationUser.Email = applicationUser.Email;
             existingApplicationUser.Name = applicationUser.Name;
@@ -106,7 +113,7 @@ namespace QRMenuAPI_TabGida.Controllers
             Microsoft.AspNetCore.Identity.SignInResult signInResult;
             ApplicationUser applicationUser = _signInManager.UserManager.FindByNameAsync(userName).Result;
             Claim claim;
-            if ( applicationUser == null)
+            if (applicationUser == null)
             {
                 return false;
             }
@@ -118,6 +125,11 @@ namespace QRMenuAPI_TabGida.Controllers
                 return true;
             }
             return signInResult.Succeeded;
+        }
+        [HttpPost("Logout")]
+        public void Logout()
+        {
+            _signInManager.SignOutAsync();
         }
         [HttpPost("TokenlessResetPassword")]
         public void ResetPassword(string userName, string newPassword)

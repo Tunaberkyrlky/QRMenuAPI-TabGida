@@ -12,6 +12,7 @@ namespace QRMenuAPI_TabGida.Data
         public DbSet<Company>? Companies { get; set; }
         public DbSet<State>? States { get; set; }
         public DbSet<Restaurant>? Restaurants { get; set; }
+        public DbSet<Menu>? Menus { get; set; }
         public DbSet<Category>? Categories { get; set; }
         public DbSet<Food>? Foods { get; set; }
         public DbSet<RestaurantUser>? RestaurantUsers { get; set; }

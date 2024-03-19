@@ -8,7 +8,6 @@ namespace QRMenuAPI_TabGida.Models
 {
     public class Company
     {
-        [JsonIgnore]
         public int Id { get; set; }
 
         [StringLength(200, MinimumLength = 2)]
