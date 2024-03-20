@@ -193,7 +193,7 @@ namespace QRMenuAPI_TabGida.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -241,7 +241,7 @@ namespace QRMenuAPI_TabGida.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Menu",
+                name: "Menus",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -253,15 +253,15 @@ namespace QRMenuAPI_TabGida.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Menu", x => x.Id);
+                    table.PrimaryKey("PK_Menus", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Menu_Restaurants_RestaurantId",
+                        name: "FK_Menus_Restaurants_RestaurantId",
                         column: x => x.RestaurantId,
                         principalTable: "Restaurants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
-                        name: "FK_Menu_States_StateId",
+                        name: "FK_Menus_States_StateId",
                         column: x => x.StateId,
                         principalTable: "States",
                         principalColumn: "Id",
@@ -305,9 +305,9 @@ namespace QRMenuAPI_TabGida.Migrations
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Categories_Menu_MenuId",
+                        name: "FK_Categories_Menus_MenuId",
                         column: x => x.MenuId,
-                        principalTable: "Menu",
+                        principalTable: "Menus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
@@ -420,13 +420,13 @@ namespace QRMenuAPI_TabGida.Migrations
                 column: "StateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Menu_RestaurantId",
-                table: "Menu",
+                name: "IX_Menus_RestaurantId",
+                table: "Menus",
                 column: "RestaurantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Menu_StateId",
-                table: "Menu",
+                name: "IX_Menus_StateId",
+                table: "Menus",
                 column: "StateId");
 
             migrationBuilder.CreateIndex(
@@ -479,7 +479,7 @@ namespace QRMenuAPI_TabGida.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Menu");
+                name: "Menus");
 
             migrationBuilder.DropTable(
                 name: "Restaurants");

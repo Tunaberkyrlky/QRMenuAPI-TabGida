@@ -74,7 +74,6 @@ namespace QRMenuAPI_TabGida.Controllers
             existingCompany.EMail = company.EMail;
             existingCompany.TaxNumber = company.TaxNumber;
             existingCompany.PostalCode = company.PostalCode;
-            existingCompany.RegisterationDate = company.RegisterationDate;
             existingCompany.AddressDetails = company.AddressDetails;
             existingCompany.WebAddress = company.WebAddress;
             existingCompany.StateId = company.StateId;
@@ -106,10 +105,6 @@ namespace QRMenuAPI_TabGida.Controllers
                                                                             //Password; Admin123!
         public ActionResult PostCompany(Company company)
         {
-            if (User.HasClaim("CompanyId", company.Id.ToString()) == false)
-            {
-                return Unauthorized();
-            }
             ApplicationUser applicationUser = new ApplicationUser();
             Claim claim;
 
@@ -145,7 +140,7 @@ namespace QRMenuAPI_TabGida.Controllers
         // DELETE: api/Companies/5
 
         [HttpDelete("{id}")]    //Delete given Company besides all the data linked to that Company
-        [Authorize(Roles = "CompanyAdministrator")]
+        [Authorize(Roles = "Administrator")]
         public ActionResult DeleteCompany(int id)
         {
             if (User.HasClaim("CompanyId", id.ToString()) == false)

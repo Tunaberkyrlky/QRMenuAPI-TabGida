@@ -12,7 +12,7 @@ using QRMenuAPI_TabGida.Data;
 namespace QRMenuAPI_TabGida.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20240317151005_Initial")]
+    [Migration("20240320095117_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -394,7 +394,7 @@ namespace QRMenuAPI_TabGida.Migrations
 
                     b.HasIndex("StateId");
 
-                    b.ToTable("Menu");
+                    b.ToTable("Menus");
                 });
 
             modelBuilder.Entity("QRMenuAPI_TabGida.Models.Restaurant", b =>

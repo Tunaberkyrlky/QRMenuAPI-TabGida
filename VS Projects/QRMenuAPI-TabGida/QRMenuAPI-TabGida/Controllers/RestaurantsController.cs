@@ -118,7 +118,7 @@ namespace QRMenuAPI_TabGida.Controllers
             //Create an Admin user
             applicationUser.Name = restaurant.Name + "Admin";
             applicationUser.UserName = restaurant.Name + "Admin";
-            applicationUser.CompanyId = restaurant.Id;
+            applicationUser.CompanyId = restaurant.CompanyId;
             applicationUser.Email = "abc@def.com";
             applicationUser.PhoneNumber = "1112223344";
             applicationUser.RegisterationDate = DateTime.Today;
@@ -132,13 +132,17 @@ namespace QRMenuAPI_TabGida.Controllers
             _userManager.AddClaimAsync(applicationUser, claim).Wait();
             _userManager.AddToRoleAsync(applicationUser, "RestaurantAdministrator").Wait();
 
+            //Give claim  to Company Admin
+            ApplicationUser? companyAdmin = _userManager.Users.Where(u => u.CompanyId == restaurant.CompanyId).FirstOrDefault();
+            _userManager.AddClaimAsync(companyAdmin, claim).Wait();
+
             return Ok($"Restaurant created and a RestaurantId has assigned: {(restaurant.Id).ToString()}");
         }
 
         // DELETE: api/Restaurants/5
 
         [HttpDelete("{id}")]    //Delete given Restaurant besides all the data linked to that Restaurant
-        [Authorize(Roles = "RestaurantAdministrator")]
+        [Authorize(Roles = "CompanyAdmin")]
         public ActionResult DeleteRestaurant(int id)
         {
             if (User.HasClaim("RestaurantId", id.ToString()) == false)
@@ -156,7 +160,7 @@ namespace QRMenuAPI_TabGida.Controllers
 
                 restaurant.StateId = 0;
                 _context.Restaurants.Update(restaurant);
-                IQueryable<Menu> menus = _context.Menus.Where(m => m.RestaurantId == restaurant.Id);
+                IQueryable<Menu>? menus = _context.Menus.Where(m => m.RestaurantId == restaurant.Id);
                 foreach (Menu menu in menus)
                 {
                     menu.StateId = 0;

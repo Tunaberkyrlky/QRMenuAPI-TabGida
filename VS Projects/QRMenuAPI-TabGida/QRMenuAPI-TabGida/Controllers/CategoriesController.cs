@@ -98,7 +98,8 @@ namespace QRMenuAPI_TabGida.Controllers
         [Authorize(Roles = "RestaurantAdministrator")]
         public ActionResult PostCategory(Category category)
         {
-            if (User.HasClaim("RestaurantId", category.Menu.RestaurantId.ToString()) == false)
+            var menu1 = _context.Menus!.Include(m => m.Restaurant).FirstOrDefault(m => m.Id == category.MenuId);
+            if (User.HasClaim("RestaurantId", menu1.RestaurantId.ToString()) == false)
             {
                 return Unauthorized();
             }
@@ -147,6 +148,7 @@ namespace QRMenuAPI_TabGida.Controllers
             {
                 return NotFound();
             }
+            
         }
 
         private bool CategoryExists(int id)
@@ -155,3 +157,9 @@ namespace QRMenuAPI_TabGida.Controllers
         }
     }
 }
+
+
+
+
+
+

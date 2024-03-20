@@ -26,13 +26,13 @@ namespace QRMenuAPI_TabGida.Controllers
 
         [HttpGet]   //Return Menu list
         [Authorize]
-        public async Task<ActionResult<IEnumerable<Menu>>> GetMenu()
+        public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
             if (_context.Menus == null)
             {
                 return NotFound();
             }
-            return await _context.Menus.ToListAsync();
+            return await _context.Menus.ToListAsync(); 
         }
 
         // GET: api/Menus/5
@@ -65,7 +65,7 @@ namespace QRMenuAPI_TabGida.Controllers
                 return BadRequest();
             }
 
-            Menu existingMenu = _context.Menus.Find(id);
+            Menu existingMenu= _context.Menus.Find(id);
 
             existingMenu.Name = menu.Name;
             existingMenu.Description = menu.Description;
@@ -109,8 +109,8 @@ namespace QRMenuAPI_TabGida.Controllers
 
             _context.Menus.Add(menu);
             _context.SaveChanges();
-            
-            return Ok($"Menu linked to {menu.Restaurant.Name} created and a MenuId has assigned: {(menu.Id).ToString()}");
+            Restaurant parentRestaurant = _context.Restaurants.Where(r => r.Id == menu.RestaurantId).FirstOrDefault();
+            return Ok($"Menu linked to {parentRestaurant.Name} created and a MenuId has assigned: {(menu.Id).ToString()}");
         }
 
         // DELETE: api/Menus/5

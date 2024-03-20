@@ -99,7 +99,8 @@ namespace QRMenuAPI_TabGida.Controllers
         [Authorize(Roles = "RestaurantAdministrator")]
         public ActionResult PostFood(Food food)
         {
-            if (User.HasClaim("RestaurantId", food.Category.Menu.RestaurantId.ToString()) == false)
+            var category = _context.Categories!.Include(c => c.Menu).FirstOrDefault(c => c.Id == food.CategoryId);
+            if (User.HasClaim("RestaurantId", category.Menu.RestaurantId.ToString()) == false)
             {
                 return Unauthorized();
             }
