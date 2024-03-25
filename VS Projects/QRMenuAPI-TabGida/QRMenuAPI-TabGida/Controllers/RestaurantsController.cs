@@ -168,7 +168,7 @@ namespace QRMenuAPI_TabGida.Controllers
         // POST: api/User
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("NewRestaurantUser")]
-        [Authorize(Roles = "RestaurantAdmin")]
+        [Authorize(Roles = "RestaurantAdministrator")]
         public ActionResult PostApplicationUser(ApplicationUser applicationUser, string password, int restaurantId)
         {
             var restaurant = _context.Restaurants.Where(r => r.Id == restaurantId).FirstOrDefault();
@@ -196,7 +196,7 @@ namespace QRMenuAPI_TabGida.Controllers
         }
 
         [HttpDelete("{DeleteRestaurantUser}")]
-        [Authorize(Roles = "RestaurantAdmin")]
+        [Authorize(Roles = "RestaurantAdministrator")]
         public async Task<IActionResult> DeleteApplicationUser(string id)
         {
             var user = _context.RestaurantUsers.Where(u => u.UserId == id).FirstOrDefault();
@@ -226,7 +226,7 @@ namespace QRMenuAPI_TabGida.Controllers
         // DELETE: api/Restaurants/5
 
         [HttpDelete("{id}")]    //Delete given Restaurant besides all the data linked to that Restaurant
-        [Authorize(Roles = "CompanyAdmin")]
+        [Authorize(Roles = "CompanyAdministrator")]
         public ActionResult DeleteRestaurant(int id)
         {
             if (User.HasClaim("RestaurantId", id.ToString()) == false)
