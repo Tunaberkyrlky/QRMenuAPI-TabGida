@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using QRMenuAPI_TabGida.Models;
 using System.Data;
-
+using System.Security.Claims;
 
 namespace QRMenuAPI_TabGida.Data
 {
@@ -10,12 +10,12 @@ namespace QRMenuAPI_TabGida.Data
     {
         private readonly ApplicationContext? _context;
         private readonly RoleManager<IdentityRole>? _roleManager;
-        private readonly UserManager<ApplicationUser>? _userManager;
-        public DataInitialization(ApplicationContext context, RoleManager<IdentityRole>? roleManager, UserManager<ApplicationUser>? userManager)
+        private readonly SignInManager<ApplicationUser>? _signInManager;
+        public DataInitialization(ApplicationContext context, RoleManager<IdentityRole>? roleManager, UserManager<ApplicationUser>? userManager, SignInManager<ApplicationUser>? signInManager)
         {
             _context = context;
             _roleManager = roleManager;
-            _userManager = userManager;
+            _signInManager = signInManager;
 
             State state;
             Company company = null;
@@ -79,19 +79,25 @@ namespace QRMenuAPI_TabGida.Data
                             applicationUser.PhoneNumber = "1112223344";
                             applicationUser.RegisterationDate = DateTime.Today;
                             applicationUser.StateId = 1;
-                            userManager.CreateAsync(applicationUser, "Admin123!").Wait();
-                            userManager.AddToRoleAsync(applicationUser, "Administrator").Wait();
+                            _signInManager.UserManager.CreateAsync(applicationUser, "Admin123!").Wait();
+                            _signInManager.UserManager.AddToRoleAsync(applicationUser, "Administrator").Wait();
 
-                            applicationUser = new ApplicationUser();
-                            applicationUser.UserName = "SA";
-                            applicationUser.CompanyId = company.Id;
-                            applicationUser.Name = "SystemAdministrator";
-                            applicationUser.Email = "abc@def.com";
-                            applicationUser.PhoneNumber = "1112223344";
-                            applicationUser.RegisterationDate = DateTime.Today;
-                            applicationUser.StateId = 1;
-                            userManager.CreateAsync(applicationUser, "Admin123!").Wait();
-                            userManager.AddToRoleAsync(applicationUser, "SystemAdministrator").Wait();
+                            Claim userClaim = new Claim("UserId", applicationUser.Id.ToString());
+                            _signInManager.UserManager.AddClaimAsync(applicationUser, userClaim).Wait();
+                            
+                            Claim CompanyClaim = new Claim("CompanyId", applicationUser.CompanyId.ToString());
+                            _signInManager.UserManager.AddClaimAsync(applicationUser, CompanyClaim).Wait();
+
+                            //applicationUser = new ApplicationUser();
+                            //applicationUser.UserName = "SA";
+                            //applicationUser.CompanyId = company.Id;
+                            //applicationUser.Name = "SystemAdministrator";
+                            //applicationUser.Email = "abc@def.com";
+                            //applicationUser.PhoneNumber = "1112223344";
+                            //applicationUser.RegisterationDate = DateTime.Today;
+                            //applicationUser.StateId = 1;
+                            //userManager.CreateAsync(applicationUser, "Admin123!").Wait();
+                            //userManager.AddToRoleAsync(applicationUser, "SystemAdministrator").Wait();
                         }
                     }
                 }

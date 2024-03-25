@@ -25,12 +25,12 @@ namespace QRMenuAPI_TabGida.Data
             modelBuilder.Entity<Menu>().HasOne(r => r.Restaurant).WithMany().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Category>().HasOne(c => c.State).WithMany().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Food>().HasOne(f => f.State).WithMany().OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<RestaurantUser>().HasOne(r => r.Restaurant).WithMany().OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<RestaurantUser>().HasOne(r => r.ApplicationUser).WithMany().OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<RestaurantUser>().HasKey(r => new { r.RestaurantId, r.UserId });
+
+            modelBuilder.Entity<RestaurantUser>().HasOne(ru => ru.Restaurant).WithMany(r => r.RestaurantUsers).HasForeignKey(ru => ru.RestaurantId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<RestaurantUser>().HasOne(ru => ru.ApplicationUser).WithMany(u => u.RestaurantUsers).HasForeignKey(ru => ru.UserId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<RestaurantUser>().HasKey(ru => new { ru.RestaurantId, ru.UserId });
             base.OnModelCreating(modelBuilder);
         }
     }
 }
-//SqlException: The INSERT statement conflicted with the FOREIGN KEY constraint"FK_Restaurants_Companies_CompanyId".
-//The conflict occurred in database "QRMenuAPI", table "dbo.Companies", column 'Id'.
+

@@ -29,5 +29,7 @@ namespace QRMenuAPI_TabGida.Models
         [JsonIgnore]
         [ForeignKey("StateId")]
         public State? State { get; set; }
+
+        public virtual ICollection<Category>? Categories { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using QRMenuAPI_TabGida.Models;
 
@@ -29,12 +30,16 @@ namespace QRMenuAPI_TabGida.Models
 
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]
+        [JsonIgnore]
         public Company? Company { get; set; }
 
         [Column(TypeName = "tinyint")]
         public byte StateId { get; set; }
         [ForeignKey("StateId")]
+        [JsonIgnore]
         public State? State { get; set; }
+
+        public virtual ICollection<RestaurantUser>? RestaurantUsers { get; set; }
     }
 }
 

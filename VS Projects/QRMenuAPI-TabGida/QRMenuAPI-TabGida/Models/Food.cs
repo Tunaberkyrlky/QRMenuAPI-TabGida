@@ -33,6 +33,7 @@ namespace QRMenuAPI_TabGida.Models
         [ForeignKey("StateId")]
         [JsonIgnore]
         public State? State { get; set; }
-        
+
+
     }
 }

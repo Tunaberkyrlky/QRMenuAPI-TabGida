@@ -16,11 +16,13 @@ namespace QRMenuAPI_TabGida.Controllers
     {
         private readonly ApplicationContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public RestaurantsController(ApplicationContext context, UserManager<ApplicationUser> userManager)
+        public RestaurantsController(ApplicationContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _context = context;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // GET: api/Restaurants
@@ -42,7 +44,7 @@ namespace QRMenuAPI_TabGida.Controllers
         [Authorize]
         public async Task<ActionResult<Restaurant>> GetRestaurant(int id)
         {
-            var restaurant = await _context.Restaurants.FindAsync(id);
+            var restaurant = await _context.Restaurants!.FindAsync(id);
             if (_context.Restaurants == null || restaurant == null)
             {
                 return NotFound();
@@ -50,6 +52,23 @@ namespace QRMenuAPI_TabGida.Controllers
             return restaurant;
         }
 
+        // GET: api/RestaurantMenu/5
+        [HttpGet("GetRestaurantMenu")]
+        [Authorize(Roles = "RestaurantAdministrator")]
+        public async Task<ActionResult<Restaurant>> GetMenu(int RestaurantId)
+        {
+            var restaurant = await _context.Restaurants!.FindAsync(RestaurantId);
+            if (User.HasClaim("RestaurantId", RestaurantId.ToString()) == false)
+            {
+                return Unauthorized();
+            }
+            else if (RestaurantId != restaurant.Id)
+            {
+                return BadRequest();
+            }
+            IQueryable<Menu> menu = _context.Menus.Include(m => m.Categories).ThenInclude(c => c.Foods).Where(m => m.RestaurantId == RestaurantId);
+            return Ok(menu);
+        }
         // PUT: api/Restaurants/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
@@ -94,7 +113,7 @@ namespace QRMenuAPI_TabGida.Controllers
                 }
             }
         }
-
+        
         // POST: api/Restaurants
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
@@ -132,11 +151,76 @@ namespace QRMenuAPI_TabGida.Controllers
             _userManager.AddClaimAsync(applicationUser, claim).Wait();
             _userManager.AddToRoleAsync(applicationUser, "RestaurantAdministrator").Wait();
 
+            
+            RestaurantUser restaurantUser = new RestaurantUser()
+            {
+                UserId = applicationUser.Id,
+                RestaurantId = restaurant.Id
+            };
+
             //Give claim  to Company Admin
             ApplicationUser? companyAdmin = _userManager.Users.Where(u => u.CompanyId == restaurant.CompanyId).FirstOrDefault();
             _userManager.AddClaimAsync(companyAdmin, claim).Wait();
 
             return Ok($"Restaurant created and a RestaurantId has assigned: {(restaurant.Id).ToString()}");
+        }
+
+        // POST: api/User
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("NewRestaurantUser")]
+        [Authorize(Roles = "RestaurantAdmin")]
+        public ActionResult PostApplicationUser(ApplicationUser applicationUser, string password, int restaurantId)
+        {
+            var restaurant = _context.Restaurants.Where(r => r.Id == restaurantId).FirstOrDefault();
+            if (User.HasClaim("RestaurantId", restaurant.Id.ToString()) == false)
+            {
+                return Unauthorized();
+            }
+            var UserId = applicationUser.Id;
+            Claim userClaim = new Claim("UserId", UserId.ToString());
+            _signInManager.UserManager.AddClaimAsync(applicationUser, userClaim).Wait();
+            Claim RestaurantClaim = new Claim("RestaurantId", restaurantId.ToString());
+            _signInManager.UserManager.AddClaimAsync(applicationUser, RestaurantClaim).Wait();
+            Claim CompanyClaim = new Claim("CompanyId", restaurant.CompanyId.ToString());
+            _signInManager.UserManager.AddClaimAsync(applicationUser, CompanyClaim).Wait();
+
+            _signInManager.UserManager.CreateAsync(applicationUser, password).Wait();
+
+            RestaurantUser restaurantUser = new RestaurantUser()
+            {
+                UserId = applicationUser.Id,
+                RestaurantId = restaurant.Id
+            };
+
+            return Ok(applicationUser.Id);
+        }
+
+        [HttpDelete("{DeleteRestaurantUser}")]
+        [Authorize(Roles = "RestaurantAdmin")]
+        public async Task<IActionResult> DeleteApplicationUser(string id)
+        {
+            var user = _context.RestaurantUsers.Where(u => u.UserId == id).FirstOrDefault();
+
+            if (User.HasClaim("RestaurantId", user.RestaurantId.ToString()) == false)
+            {
+                return Unauthorized();
+            }
+            else if (User.HasClaim("UserId", user.UserId.ToString()))
+            {
+                return Unauthorized();
+            }
+            var applicationUser = await _signInManager.UserManager.FindByIdAsync(id);
+            if (applicationUser == null)
+            {
+                return NotFound();
+            }
+            //Hard delete
+            //await _userManager.DeleteAsync(applicationUser);
+
+            //Soft delete
+            applicationUser.StateId = 0;
+            await _signInManager.UserManager.UpdateAsync(applicationUser);
+            return NoContent();
         }
 
         // DELETE: api/Restaurants/5
@@ -186,6 +270,8 @@ namespace QRMenuAPI_TabGida.Controllers
                 return NotFound();
             }
         }
+
+
 
         private bool RestaurantExists(int id)
         {

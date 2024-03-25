@@ -10,6 +10,7 @@ using QRMenuAPI_TabGida.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace QRMenuAPI_TabGida.Controllers
 {
@@ -67,6 +68,10 @@ namespace QRMenuAPI_TabGida.Controllers
         [Authorize]
         public ActionResult PutApplicationUser(string id, ApplicationUser applicationUser)
         {
+            if (User.HasClaim("UserId", applicationUser.Id))
+            {
+                return Unauthorized();
+            }
             ApplicationUser existingApplicationUser = _signInManager.UserManager.FindByIdAsync(id).Result;
             existingApplicationUser.UserName = applicationUser.UserName;
             existingApplicationUser.Email = applicationUser.Email;
@@ -78,20 +83,33 @@ namespace QRMenuAPI_TabGida.Controllers
             return Ok();
         }
 
-        // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public string PostApplicationUser(ApplicationUser applicationUser, string password)
-        {
+        //// POST: api/User
+        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //[HttpPost]
+        //public string PostApplicationUser(ApplicationUser applicationUser, string password)
+        //{
+        //    var UserId = applicationUser.Id;
+        //    Claim claim = new Claim("UserId", UserId.ToString());
+        //    _signInManager.UserManager.AddClaimAsync(applicationUser, claim).Wait();
+        //    _signInManager.UserManager.CreateAsync(applicationUser, password).Wait();
 
-            _signInManager.UserManager.CreateAsync(applicationUser, password).Wait();
-
-            return applicationUser.Id;
-        }
+        //    return applicationUser.Id;
+        //}
         // DELETE: api/User/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "RestaurantAdmin")]
         public async Task<IActionResult> DeleteApplicationUser(string id)
         {
+            var user = _context.RestaurantUsers.Where(u => u.UserId == id).FirstOrDefault();
+            
+            if (User.HasClaim("RestaurantId", user.RestaurantId.ToString()) == false)
+            {
+                return Unauthorized();
+            }
+            else if (User.HasClaim("UserId", user.UserId.ToString()))
+            {
+                return Unauthorized();
+            }
             var applicationUser = await _signInManager.UserManager.FindByIdAsync(id);
             if (applicationUser == null)
             {
@@ -110,10 +128,14 @@ namespace QRMenuAPI_TabGida.Controllers
         [HttpPost("Login")]
         public bool Login(string userName, string password)
         {
-            Microsoft.AspNetCore.Identity.SignInResult signInResult;
+            SignInResult signInResult;
             ApplicationUser applicationUser = _signInManager.UserManager.FindByNameAsync(userName).Result;
             Claim claim;
             if (applicationUser == null)
+            {
+                return false;
+            }
+            else if (applicationUser.StateId !=1)
             {
                 return false;
             }
@@ -126,11 +148,13 @@ namespace QRMenuAPI_TabGida.Controllers
             }
             return signInResult.Succeeded;
         }
+
         [HttpPost("Logout")]
         public void Logout()
         {
             _signInManager.SignOutAsync();
         }
+
         [HttpPost("TokenlessResetPassword")]
         public void ResetPassword(string userName, string newPassword)
         {
@@ -143,6 +167,7 @@ namespace QRMenuAPI_TabGida.Controllers
             _signInManager.UserManager.RemovePasswordAsync(applicationUser).Wait();
             _signInManager.UserManager.AddPasswordAsync(applicationUser, newPassword).Wait();
         }
+
         [HttpPost("ResetPassword")]
         public string? ResetPassword(string userName)
         {
@@ -170,15 +195,15 @@ namespace QRMenuAPI_TabGida.Controllers
             }
             return Ok();
         }
+        
+        //[HttpPost("AssignRole")]
+        //public ActionResult AssignRole(string userId, string roleId)
+        //{
+        //    ApplicationUser applicationUser = _signInManager.UserManager.FindByIdAsync(userId).Result;
+        //    IdentityRole identityRole = _roleManager.FindByIdAsync(roleId).Result;
 
-        [HttpPost("AssignRole")]
-        public ActionResult AssignRole(string userId, string roleId)
-        {
-            ApplicationUser applicationUser = _signInManager.UserManager.FindByIdAsync(userId).Result;
-            IdentityRole identityRole = _roleManager.FindByIdAsync(roleId).Result;
-
-            _signInManager.UserManager.AddToRoleAsync(applicationUser, identityRole.Name).Wait();
-            return Ok($"{identityRole.Name} role is assigned to {applicationUser.Name}");
-        }
+        //    _signInManager.UserManager.AddToRoleAsync(applicationUser, identityRole.Name).Wait();
+        //    return Ok($"{identityRole.Name} Role with RoleId: {identityRole.Id} is assigned to {applicationUser.Name}");
+        //}
     }
 }

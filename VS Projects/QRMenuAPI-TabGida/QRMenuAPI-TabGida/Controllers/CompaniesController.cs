@@ -181,6 +181,12 @@ namespace QRMenuAPI_TabGida.Controllers
                         }
                     }
                 }
+                var users = _context.Users.Where(u => u.CompanyId == company.Id);
+                foreach(var user in users)
+                {
+                    user.StateId = 0;
+                    _context.Users.Update(user);
+                }
                 _context.SaveChanges();
                 return Ok("Company with given Id and all the data linked to the Company has been deleted");
             }

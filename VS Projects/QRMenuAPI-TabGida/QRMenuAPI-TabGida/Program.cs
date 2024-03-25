@@ -29,7 +29,7 @@ namespace QRMenuAPI_TabGida
             builder.Services.AddAuthorization();
 
             var app = builder.Build();
-
+            
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -46,7 +46,9 @@ namespace QRMenuAPI_TabGida
                 ApplicationContext? Context = app.Services.CreateScope().ServiceProvider.GetService<ApplicationContext>();
                 RoleManager<IdentityRole>? roleManager = app.Services.CreateScope().ServiceProvider.GetService<RoleManager<IdentityRole>>();
                 UserManager<ApplicationUser>? userManager = app.Services.CreateScope().ServiceProvider.GetService<UserManager<ApplicationUser>>();
-                DataInitialization dataInitialization = new DataInitialization(Context,roleManager,userManager);
+                SignInManager<ApplicationUser>? signInManager = app.Services.CreateScope().ServiceProvider.GetService<SignInManager<ApplicationUser>>();
+
+                DataInitialization dataInitialization = new DataInitialization(Context,roleManager,userManager,signInManager);
 
                 
             }

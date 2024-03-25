@@ -480,7 +480,7 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -489,7 +489,7 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.HasOne("QRMenuAPI_TabGida.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -498,7 +498,7 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.HasOne("QRMenuAPI_TabGida.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -507,13 +507,13 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("QRMenuAPI_TabGida.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -522,7 +522,7 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.HasOne("QRMenuAPI_TabGida.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -531,7 +531,7 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.HasOne("QRMenuAPI_TabGida.Models.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("QRMenuAPI_TabGida.Models.State", "State")
@@ -548,9 +548,9 @@ namespace QRMenuAPI_TabGida.Migrations
             modelBuilder.Entity("QRMenuAPI_TabGida.Models.Category", b =>
                 {
                     b.HasOne("QRMenuAPI_TabGida.Models.Menu", "Menu")
-                        .WithMany()
+                        .WithMany("Categories")
                         .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("QRMenuAPI_TabGida.Models.State", "State")
@@ -569,7 +569,7 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.HasOne("QRMenuAPI_TabGida.Models.State", "State")
                         .WithMany()
                         .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("State");
@@ -578,9 +578,9 @@ namespace QRMenuAPI_TabGida.Migrations
             modelBuilder.Entity("QRMenuAPI_TabGida.Models.Food", b =>
                 {
                     b.HasOne("QRMenuAPI_TabGida.Models.Category", "Category")
-                        .WithMany()
+                        .WithMany("Foods")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("QRMenuAPI_TabGida.Models.State", "State")
@@ -599,13 +599,13 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.HasOne("QRMenuAPI_TabGida.Models.Restaurant", "Restaurant")
                         .WithMany()
                         .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("QRMenuAPI_TabGida.Models.State", "State")
                         .WithMany()
                         .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Restaurant");
@@ -635,13 +635,13 @@ namespace QRMenuAPI_TabGida.Migrations
             modelBuilder.Entity("QRMenuAPI_TabGida.Models.RestaurantUser", b =>
                 {
                     b.HasOne("QRMenuAPI_TabGida.Models.Restaurant", "Restaurant")
-                        .WithMany()
+                        .WithMany("RestaurantUsers")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("QRMenuAPI_TabGida.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("RestaurantUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -649,6 +649,26 @@ namespace QRMenuAPI_TabGida.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Restaurant");
+                });
+
+            modelBuilder.Entity("QRMenuAPI_TabGida.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("RestaurantUsers");
+                });
+
+            modelBuilder.Entity("QRMenuAPI_TabGida.Models.Category", b =>
+                {
+                    b.Navigation("Foods");
+                });
+
+            modelBuilder.Entity("QRMenuAPI_TabGida.Models.Menu", b =>
+                {
+                    b.Navigation("Categories");
+                });
+
+            modelBuilder.Entity("QRMenuAPI_TabGida.Models.Restaurant", b =>
+                {
+                    b.Navigation("RestaurantUsers");
                 });
 #pragma warning restore 612, 618
         }
